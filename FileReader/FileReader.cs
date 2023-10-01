@@ -93,7 +93,8 @@ namespace FileReader
                 {
                     case FileType.Text:
                         TextFileReader textReader = new TextFileReader();
-                        fileContents = textReader.ReadFile(path, encryption);
+                        if (textReader.RoleAllowsRead(role, RoleDeclarations, path))
+                            fileContents = textReader.ReadFile(path, encryption);
                         break;
                     case FileType.Xml:
                         XmlFileReader xmlReader = new XmlFileReader();
