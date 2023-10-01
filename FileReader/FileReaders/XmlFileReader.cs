@@ -1,17 +1,13 @@
 ﻿using FileReader.Base;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace FileReader.FileReaders
 {
     public class XmlFileReader : IFileReader
     {
-        public string ReadFile(string path)
+        public string ReadFile(string path, FileEncryption encryption = FileEncryption.None)
         {
             try
             {

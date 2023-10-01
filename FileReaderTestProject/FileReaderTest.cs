@@ -1,5 +1,7 @@
 using System.Text;
 using System.Xml;
+using FileReader.Base;
+using FileReader.Encryption;
 using FileReader.FileReaders;
 
 namespace FileReaderTestProject
@@ -30,6 +32,34 @@ namespace FileReaderTestProject
 
             //Act
             string fileContents = reader.ReadFile(filePath);
+
+            //Assert  
+            Assert.AreEqual(expectedContents, fileContents);
+        }
+
+        [TestMethod]
+        public void TextFileReader_ReadFile_ReturnsDecryptedContent()
+        {
+            //Arrange
+            string filePath = "./encrypted.text";
+            string expectedContents = "abcd";
+            ITextFileEncryption encryptor = new ReversedEncryption();
+            try
+            {
+                byte[] contentBytes = Encoding.UTF8.GetBytes(encryptor.Encrypt(expectedContents));
+
+                // Create and write to the file so we always have something to test with.
+                using (FileStream fs = File.Create(filePath))
+                {
+                    fs.Write(contentBytes, 0, contentBytes.Length);
+                }
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+
+            TextFileReader reader = new TextFileReader();
+
+            //Act
+            string fileContents = reader.ReadFile(filePath, FileReader.FileEncryption.Reversed);
 
             //Assert  
             Assert.AreEqual(expectedContents, fileContents);

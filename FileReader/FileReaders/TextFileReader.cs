@@ -1,22 +1,35 @@
 ﻿using FileReader.Base;
+using FileReader.Encryption;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileReader.FileReaders
 {
+
     public class TextFileReader : IFileReader
     {
-        public string ReadFile(string path)
+        public string ReadFile(string path, FileEncryption encryption = FileEncryption.None)
         {
             try
             {
                 if (!File.Exists(path))
                 {
-                    throw new FileNotFoundException($"The file at {path} does not exist.");
+                    throw new FileNotFoundException($"The file at {path} does not exist!");
+                }
+
+                if(encryption != FileEncryption.None) {
+                    ITextFileEncryption textEncryptor;
+                    switch(encryption)
+                    {
+                        case FileEncryption.Reversed:
+                            textEncryptor = new ReversedEncryption();
+                            break;
+                        case FileEncryption.Offset:
+                            textEncryptor = new ReversedEncryption();
+                            break;
+                        default: throw new ArgumentException();
+                    }
+                    return textEncryptor.Decrypt(File.ReadAllText(path));
                 }
 
                 return File.ReadAllText(path);
