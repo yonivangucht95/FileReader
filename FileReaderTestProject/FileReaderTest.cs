@@ -1,5 +1,6 @@
 using System.Text;
 using System.Xml;
+using FileReader;
 using FileReader.Base;
 using FileReader.Encryption;
 using FileReader.FileReaders;
@@ -109,5 +110,58 @@ namespace FileReaderTestProject
             Assert.AreEqual(expectedTitle, actualTitle);
         }
 
+        [TestMethod]
+        public void XmlFileReader_RoleAllowsRead_ReturnsTrue()
+        {
+            // Arrange
+            string filePath = "./private.xml";
+            Role role = Role.SuperAdmin;
+            RolePermissions permission = new RolePermissions()
+            {
+                Any = false,
+                AllowedFiles = new List<string> { filePath }
+            };
+
+            Dictionary<Role, RolePermissions> permissions = new Dictionary<Role, RolePermissions> { { role, permission } };
+            XmlFileReader reader = new XmlFileReader();
+
+            Assert.IsTrue(reader.RoleAllowsRead(role, permissions, filePath));
+        }
+
+        [TestMethod]
+        public void XmlFileReader_RoleAllowsRead_ReturnsFalse()
+        {
+            // Arrange
+            string filePath = "./private.xml";
+            Role role = Role.SuperAdmin;
+            RolePermissions permission = new RolePermissions()
+            {
+                Any = false,
+                AllowedFiles = new List<string> { }
+            };
+
+            Dictionary<Role, RolePermissions> permissions = new Dictionary<Role, RolePermissions> { { role, permission } };
+            XmlFileReader reader = new XmlFileReader();
+
+            Assert.IsFalse(reader.RoleAllowsRead(role, permissions, filePath));
+        }
+
+        [TestMethod]
+        public void XmlFileReader_RoleAllowsRead_OverridePermissionReturnsTrue()
+        {
+            // Arrange
+            string filePath = "./private.xml";
+            Role role = Role.User;
+            RolePermissions permission = new RolePermissions()
+            {
+                Any = true,
+                AllowedFiles = new List<string> { }
+            };
+
+            Dictionary<Role, RolePermissions> permissions = new Dictionary<Role, RolePermissions> { { role, permission } };
+            XmlFileReader reader = new XmlFileReader();
+
+            Assert.IsTrue(reader.RoleAllowsRead(role, permissions, filePath));
+        }
     }
 }

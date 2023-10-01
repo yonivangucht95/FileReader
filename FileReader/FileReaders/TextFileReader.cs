@@ -6,9 +6,9 @@ using System.IO;
 namespace FileReader.FileReaders
 {
 
-    public class TextFileReader : IFileReader
+    public class TextFileReader : FileReaderBase
     {
-        public string ReadFile(string path, FileEncryption encryption = FileEncryption.None)
+        public override string ReadFile(string path, FileEncryption encryption = FileEncryption.None)
         {
             try
             {
@@ -17,9 +17,10 @@ namespace FileReader.FileReaders
                     throw new FileNotFoundException($"The file at {path} does not exist!");
                 }
 
-                if(encryption != FileEncryption.None) {
+                if (encryption != FileEncryption.None)
+                {
                     ITextFileEncryption textEncryptor;
-                    switch(encryption)
+                    switch (encryption)
                     {
                         case FileEncryption.Reversed:
                             textEncryptor = new ReversedEncryption();
