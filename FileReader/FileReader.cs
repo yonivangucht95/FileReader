@@ -106,7 +106,9 @@ namespace FileReader
                         break;
                     case FileType.JSON:
                         JsonFileReader jsonFileReader = new JsonFileReader();
-                        fileContents = jsonFileReader.ReadFile(path);
+                        if (jsonFileReader.RoleAllowsRead(role, RoleDeclarations, path))
+                            fileContents = jsonFileReader.ReadFile(path);
+                        else throw new RoleAccessException($"The role {role} does not have access to the file at {path}");
                         break;
                     default:
                         throw new NotSupportedException($"File type {fileType} is not supported.");
