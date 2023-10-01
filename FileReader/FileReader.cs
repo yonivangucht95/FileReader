@@ -1,4 +1,3 @@
-using FileReader.Encryption;
 using FileReader.FileReaders;
 using System;
 using System.Collections.Generic;
@@ -99,7 +98,7 @@ namespace FileReader
                     case FileType.Xml:
                         XmlFileReader xmlReader = new XmlFileReader();
                         if (xmlReader.RoleAllowsRead(role, RoleDeclarations, path))
-                            fileContents = xmlReader.ReadFile(path);
+                            fileContents = xmlReader.ReadFile(path, encryption);
                         else throw new RoleAccessException($"The role {role} does not have access to the file at {path}");
                         break;
                     default:

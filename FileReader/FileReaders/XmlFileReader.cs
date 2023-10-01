@@ -1,6 +1,5 @@
 ﻿using FileReader.Base;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -17,8 +16,11 @@ namespace FileReader.FileReaders
                     throw new FileNotFoundException($"The file at {path} does not exist.");
                 }
 
+                string encryptedContent = File.ReadAllText(path);
+                string decryptedContent = Decrypt(encryptedContent, encryption);
+
                 XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(path);
+                xmlDoc.LoadXml(decryptedContent);
 
                 return ExtractXmlNodesAsText(xmlDoc);
             }
@@ -43,8 +45,8 @@ namespace FileReader.FileReaders
             {
                 XmlWriterSettings settings = new XmlWriterSettings
                 {
-                    Indent = true,          
-                    NewLineChars = "\r\n",  
+                    Indent = true,
+                    NewLineChars = "\r\n",
                 };
 
                 using (XmlWriter xmlWriter = XmlWriter.Create(stringWriter, settings))

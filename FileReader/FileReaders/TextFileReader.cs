@@ -17,23 +17,7 @@ namespace FileReader.FileReaders
                     throw new FileNotFoundException($"The file at {path} does not exist!");
                 }
 
-                if (encryption != FileEncryption.None)
-                {
-                    ITextFileEncryption textEncryptor;
-                    switch (encryption)
-                    {
-                        case FileEncryption.Reversed:
-                            textEncryptor = new ReversedEncryption();
-                            break;
-                        case FileEncryption.Offset:
-                            textEncryptor = new ReversedEncryption();
-                            break;
-                        default: throw new ArgumentException();
-                    }
-                    return textEncryptor.Decrypt(File.ReadAllText(path));
-                }
-
-                return File.ReadAllText(path);
+                return Decrypt(File.ReadAllText(path), encryption);
             }
             catch (FileNotFoundException ex)
             {

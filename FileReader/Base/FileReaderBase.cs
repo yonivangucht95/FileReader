@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using FileReader.Encryption;
 
 namespace FileReader.Base
 {
@@ -12,6 +13,24 @@ namespace FileReader.Base
         /// <param name="encryption">Encryption to use if any</param>
         /// <returns>The content of the file</returns>
         public abstract string ReadFile(string path, FileEncryption encryption = FileEncryption.None);
+
+        internal virtual string Decrypt(string content, FileEncryption encryption)
+        {
+            ITextFileEncryption textEncryptor;
+            switch (encryption)
+            {
+                case FileEncryption.Reversed:
+                    textEncryptor = new ReversedEncryption();
+                    break;
+                case FileEncryption.Offset:
+                    textEncryptor = new ReversedEncryption();
+                    break;
+                default:
+                    Console.WriteLine($"{encryption} not used or supported.");
+                    return content;
+            }
+            return textEncryptor.Decrypt(content);
+        }
 
         /// <summary>
         /// Checks if the user with a current role has access to the provided filepath. The check is done agains a preset keyvalue list where the keys are the roles and the values the permissions
