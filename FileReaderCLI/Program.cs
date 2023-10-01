@@ -12,16 +12,39 @@ internal class Program
             FileType selectedFileType = GetFileTypeFromInput();
             FileEncryption selectedEncryptionType = GetEncryptionTypeFromInput();
             bool shouldUseRoles = ShouldUseRoles();
-
+            Role selectedRole = Role.None;
             if (shouldUseRoles)
             {
-                Role role = GetRoleFromInput();
-                Console.WriteLine($"Selected File Type: {selectedFileType}\nEncryption type: {selectedEncryptionType}\nRole-base security: {shouldUseRoles} -> {role}");
+                selectedRole = GetRoleFromInput();
+                Console.WriteLine($"Selected File Type: {selectedFileType}\nEncryption type: {selectedEncryptionType}\nRole-base security: {shouldUseRoles} -> {selectedRole}");
             }
             else Console.WriteLine($"Selected File Type: {selectedFileType}\nEncryption type: {selectedEncryptionType}\nRole-base security: No");
+
+            if (ReadActualFile())
+            {
+                string path = GetPathToFile();
+                try
+                {
+                    FileReader.FileReader fr = new FileReader.FileReader();
+                    foreach (Role role in Enum.GetValues(typeof(Role)))
+                    {
+                        //Add permissions for the file to all roles because otherwise I have to add a way to add these too which would be very unwieldy in CLI
+                        fr.RoleDeclarations.Add(role, new RolePermissions() { AllowedFiles = new List<string>() { path} });
+                    }
+                    string content = fr.ReadFile(path, selectedFileType, selectedRole, selectedEncryptionType);
+                    Console.Write(content);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            }
         }
         while (true);
     }
+
+
+
     static FileType GetFileTypeFromInput()
     {
         while (true)
@@ -57,9 +80,9 @@ internal class Program
         while (true)
         {
             int i = 0;
-            foreach (FileEncryption fileType in Enum.GetValues(typeof(FileEncryption)))
+            foreach (FileEncryption fileEncryption in Enum.GetValues(typeof(FileEncryption)))
             {
-                Console.WriteLine($" {++i} - {fileType}");
+                Console.WriteLine($" {++i} - {fileEncryption}");
             }
 
             Console.Write("Choose the encryption to use: ");
@@ -109,9 +132,9 @@ internal class Program
         while (true)
         {
             int i = 0;
-            foreach (Role fileType in Enum.GetValues(typeof(Role)))
+            foreach (Role role in Enum.GetValues(typeof(Role)))
             {
-                Console.WriteLine($" {++i} - {fileType}");
+                Console.WriteLine($" {++i} - {role}");
             }
 
             Console.Write("Choose your role: ");
@@ -132,5 +155,32 @@ internal class Program
                 Console.WriteLine("Invalid input. Please enter a number.");
             }
         }
+    }
+
+    static bool ReadActualFile()
+    {
+        while (true)
+        {
+            Console.Write("Do you want to read an actual file? You need a path to a file afterwards. Permission is automaically assigned. (y/n): ");
+            string userInput = Console.ReadLine();
+
+            if (string.Equals(userInput, "y", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+            else if (string.Equals(userInput, "n", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Please enter 'y' for yes or 'n' for no.");
+            }
+        }
+    }
+    static string GetPathToFile()
+    {
+        Console.WriteLine($"Provide a path to the file");
+        return Console.ReadLine();
     }
 }
