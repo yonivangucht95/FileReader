@@ -9,7 +9,8 @@ namespace FileReader
     public enum FileType
     {
         Text,
-        Xml
+        Xml,
+        JSON
     }
 
     public enum FileEncryption
@@ -95,12 +96,17 @@ namespace FileReader
                         TextFileReader textReader = new TextFileReader();
                         if (textReader.RoleAllowsRead(role, RoleDeclarations, path))
                             fileContents = textReader.ReadFile(path, encryption);
+                        else throw new RoleAccessException($"The role {role} does not have access to the file at {path}");
                         break;
                     case FileType.Xml:
                         XmlFileReader xmlReader = new XmlFileReader();
                         if (xmlReader.RoleAllowsRead(role, RoleDeclarations, path))
                             fileContents = xmlReader.ReadFile(path, encryption);
                         else throw new RoleAccessException($"The role {role} does not have access to the file at {path}");
+                        break;
+                    case FileType.JSON:
+                        JsonFileReader jsonFileReader = new JsonFileReader();
+                        fileContents = jsonFileReader.ReadFile(path);
                         break;
                     default:
                         throw new NotSupportedException($"File type {fileType} is not supported.");
